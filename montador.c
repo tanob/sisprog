@@ -13,6 +13,7 @@ int main( int argc, char *argv[] )
    getParamInfo( argc, argv );
    showParamInfo();
    loadFile2Memory();
-   showMem();
+   //showMem();
+   testandoValores();
    return 0;
 }

@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <ctype.h>
 #include "montador_io.h"
 
 #define BUF_SIZE 100
@@ -135,9 +136,10 @@ void new( char *label, char *operation, char *op1, char *op2 )
    struct FILE_INFO *new;
    int nop = 0;
    
-   if ( op1 )
+   // verificando se ha conteudo valido 
+   if ( isalpha( op1[0] ) && isupper( op1[0] ) )
       nop++;
-   if ( op2 )
+   if ( isalpha( op2[0] ) && isupper( op2[0] ) )
       nop++;  
    
    new = malloc( sizeof( struct FILE_INFO ) );   
@@ -225,15 +227,52 @@ void showMem()
 }
 
 
+// verifica se ja ha simbolos na tabela de simbolos
+// retorno ( 0, 1, 2 ) == ( nao tem, ja tem mas sem endereco, ja tem e com endereco definido )
+int isThereSymbol( char *symbol )
+{
+   struct SYMBOL_TABLE *aux = st_first;
+   for ( ; aux; aux = aux->next )
+   {
+      if ( !strcmp( symbol, aux->symbol ) && aux->addr == 0 )
+      {
+         return 1; 
+      }
+      else if ( !strcmp( symbol, aux->symbol ) && aux->addr != 0 )
+      {
+         return 2;
+      }      
+   }
+   return 0;
+}
 
+// novo item na tabela de simbolos
+void st_new( char *symbol, struct FILE_INFO *p_mem )
+{
+   int addr;
+   if ( !strcmp( symbol, p_mem->op1 ) )
+      addr = 1;
+   else if  ( !strcmp( symbol, p_mem->op2 ) )
+      addr = 2;
+   
+   addr += p_mem->nop;
+   
+   //inserir
+      
+}
 
-
-
-
-
-
-
-
-
-
-
+void testandoValores()
+{
+   struct FILE_INFO *aux = first;
+   int index;
+   for ( index = 0; aux ; aux = aux->next, index++ )
+   {
+      if ( aux->nop == 0 )
+         printf( "\nIndice:%d\tOperation:%s\t", index, aux->operation );
+      if ( aux->nop == 1 )
+         printf( "\nIndice:%d\tOperation:%s\tOp1:%s", index, aux->operation, aux->op1 );
+      if ( aux->nop == 2 )
+         printf( "\nIndice:%d\tOperation:%s\tOp1:%s\tOp2:%s", index, aux->operation, aux->op1, aux->op2 );
+   }
+   printf("\n\n");
+}

@@ -27,10 +27,19 @@ struct FILE_INFO
    struct FILE_INFO *prev;   
 };
 
+struct SYMBOL_TABLE
+{
+   char symbol[ FIELD_SIZE ];
+   int addr;
+};
 
 struct MONTADOR_INFO info;
 struct FILE_INFO *first;
 struct FILE_INFO *last;
+
+struct SYMBOL_TABLE *st_first;
+struct SYMBOL_TABLE *st_last;
+
 
 // limpa tela generica
 #ifndef NIX
@@ -45,3 +54,7 @@ int getParamInfo( int argc, char *argv[] );
 void showParamInfo();
 void loadFile2Memory();
 void showMem();
+void testandoValores();
+
+
+
