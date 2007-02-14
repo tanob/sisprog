@@ -31,6 +31,7 @@ struct SYMBOL_TABLE
 {
    char symbol[ FIELD_SIZE ];
    int addr;
+   struct SYMBOL_TABLE *next;
 };
 
 struct MONTADOR_INFO info;
