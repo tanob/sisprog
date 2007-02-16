@@ -1,0 +1,5 @@
+CARREGA: LDA ZERO
+SOMA:       ADD VAL1
+                   ADD VAL2
+COPIA:      COPY VAL1 VAL2
+STOP
