@@ -66,6 +66,7 @@ void showParamInfo();
 void loadFile2Memory();
 void showMem();
 void testandoValores();
+void st_new( char *symbol, struct FILE_INFO *p_mem, int modo );
 
 
 

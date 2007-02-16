@@ -77,7 +77,6 @@ void createMinem()
 
 void callInputError( short int error )
 {
-      
       printf( "\n\n" );
       
       if ( error == 0 )
@@ -188,9 +187,10 @@ void showParamInfo()
 // inclui novo item na etrutura e insere itens na tabela de simbolos
 void new( char *label, char *operation, char *op1, char *op2 )
 {
-   struct FILE_INFO *new;
-   
+   struct FILE_INFO *new;   
    int nop = 0;
+   int int_op1;
+   int int_op2;
    
    //printf( "\nLABEL:%s\n", label );
    //printf( "OPERATION:%s\n", operation );
@@ -236,6 +236,32 @@ void new( char *label, char *operation, char *op1, char *op2 )
          last = new;
       }
    }   
+   
+   int_op1 = atoi( op1 );
+   int_op2 = atoi( op2 );
+   
+   // se forem simbolos insere na tabela de simbolos
+   // simbolo em op1   
+   
+   if ( strlen( label ) > 0 )
+   {
+      printf( "Definindo endereco para: %s\n", label );
+      
+   }
+   
+   if ( strlen( op1 ) > 0 && !int_op1 )
+   {
+      printf( "Simbolo encontrado: %s\n", op1 );
+   }
+   
+   if ( strlen( op2 ) > 0 && !int_op2 )
+   {
+      printf( "Simbolo encontrado: %s\n", op2 );
+   }
+
+   
+   getchar();
+   
 }
 
 // carrega conteudo do arquivo para a memoria
@@ -300,26 +326,71 @@ void showMem()
 
 // verifica se ja ha simbolos na tabela de simbolos
 // retorno ( 0, 1, 2 ) == ( nao tem, ja tem mas sem endereco, ja tem e com endereco definido )
-int isThereSymbol( char *symbol )
+struct SYMBOL_TABLE *getSymbol( char *symbol )
 {
    struct SYMBOL_TABLE *aux = st_first;
    for ( ; aux; aux = aux->next )
    {
-      if ( !strcmp( symbol, aux->symbol ) && aux->addr == 0 )
-      {
-         return 1; 
-      }
-      else if ( !strcmp( symbol, aux->symbol ) && aux->addr != 0 )
-      {
-         return 2;
-      }      
+      if ( !strcmp( symbol, aux->symbol ) )
+         return aux;
    }
-   return 0;
+   return NULL;
+}
+
+// cria item na tabela de simbolos
+void new_st( char *symbol, int addr )
+{
+   struct SYMBOL_TABLE *new;
+   new = malloc( sizeof( struct SYMBOL_TABLE ) );
+   strcpy( new->symbol, symbol );
+   new->addr = addr;
+   new->next = NULL;
+      
+   // nao existe itens, cria!
+   if ( st_first == NULL )   
+   {
+      st_first = new;
+      st_last = new;
+   }
+   else
+   {st_last->next = new;
+      st_last = new;      
+   }
 }
 
 // novo item na tabela de simbolos
-void st_new( char *symbol, struct FILE_INFO *p_mem )
-{ 
+// symbol == simbolo
+// p_mem == ponteiro para memoria que guarda item
+// modo == ( 0, 1 ) = ( definindo endereco, simbolo encontrado ) 
+void st_new( char *symbol, struct FILE_INFO *p_mem, int modo )
+{
+   struct SYMBOL_TABLE *exist = getSymbol( symbol );
+
+   // definindo endereco
+   if ( modo == 0 )     
+   {
+      // existe e com endereco definido
+      if ( exist != NULL && exist->addr != -1 )
+      {
+         // tratar erro de simbolo com multiplas definicoes
+      }
+      
+      // existe mas sem endereco definido
+      else if ( exist != NULL && exist->addr == -1 )
+      {
+         exist->addr = p_mem->addr;
+      }
+      
+   }
+   
+   // se esta apenas fazendo referencia a um simbolo insere ele com endereco negativo( -1 )
+   else if ( modo == 1 )
+   {
+      if ( exist == NULL )
+      {  
+         new_st( symbol, -1 );
+      }
+   }
 }
 
 void testandoValores()

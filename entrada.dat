@@ -1,4 +1,4 @@
-INICIO:  COPY 10    20           
+INICIO:  COPY 10   PSY
 FIM:       SPACE 12
               SPACE VAL2
               
