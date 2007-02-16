@@ -11,13 +11,67 @@
 #define BUF_SIZE 100
 
 
-void showMessage( char *msg )
+void createMinem()
 {
-   clear();
-   printf( "\n      %s\n", msg );
-   printf( "      %s\n", "Pressione ENTER para continuar" );
-   getchar();
-   clear();
+   minem[ 0 ].code = 2;
+   strcpy( minem[ 0 ].name, "ADD" );
+   
+   minem[ 1 ].code = 0;
+   strcpy( minem[ 1 ].name, "BR" );
+
+   minem[ 2 ].code = 5;
+   strcpy( minem[ 2 ].name, "BRNEG" );
+
+   minem[ 3 ].code = 1;
+   strcpy( minem[ 3 ].name, "BRPOS" );
+   
+   minem[ 4 ].code = 4;
+   strcpy( minem[ 4 ].name, "BRZERO" );
+   
+   minem[ 5 ].code = 15;
+   strcpy( minem[ 5 ].name, "CALL" );
+   
+   minem[ 6 ].code = 13;
+   strcpy( minem[ 6 ].name, "COPY" );
+   
+    minem[ 7 ].code = 10;
+   strcpy( minem[ 7 ].name, "DIVIDE" );
+
+   minem[ 8 ].code = 3;
+   strcpy( minem[ 8 ].name, "LOAD" );
+
+   minem[ 9 ].code = 14;
+   strcpy( minem[ 9 ].name, "MULT" );
+
+   minem[ 10 ].code = 12;
+   strcpy( minem[ 10 ].name, "READ" );
+
+   minem[ 11 ].code = 16;
+   strcpy( minem[ 11 ].name, "RET" );
+
+   minem[ 12 ].code = 11;
+   strcpy( minem[ 12 ].name, "STOP" );
+   
+   minem[ 13 ].code = 7;
+   strcpy( minem[ 13 ].name, "STORE" );
+
+   minem[ 14 ].code = 6;
+   strcpy( minem[ 14 ].name, "SUB" );
+   
+   minem[ 15 ].code = 8;
+   strcpy( minem[ 15 ].name, "WRITE" );   
+   
+   minem[ 16 ].code = -1;
+   strcpy( minem[ 16 ].name, "SPACE" );   
+
+   minem[ 17 ].code = -1;
+   strcpy( minem[ 17 ].name, "CONST" );   
+   
+   minem[ 18 ].code = -1;
+   strcpy( minem[ 18 ].name, "INTDEF" );   
+
+   minem[ 19 ].code = -1;
+   strcpy( minem[ 19 ].name, "EXTDEF" );   
 }
 
 
@@ -130,42 +184,58 @@ void showParamInfo()
 }
 
 
-// inclui novo item na etrutura
+
+// inclui novo item na etrutura e insere itens na tabela de simbolos
 void new( char *label, char *operation, char *op1, char *op2 )
 {
    struct FILE_INFO *new;
+   
    int nop = 0;
    
-   // verificando se ha conteudo valido 
-   if ( isalpha( op1[0] ) && isupper( op1[0] ) )
-      nop++;
-   if ( isalpha( op2[0] ) && isupper( op2[0] ) )
-      nop++;  
+   //printf( "\nLABEL:%s\n", label );
+   //printf( "OPERATION:%s\n", operation );
+   //printf( "Op1:%s\n", op1 );
+   //printf( "Op2:%s\n\n", op2 );
    
-   new = malloc( sizeof( struct FILE_INFO ) );   
-   new->nop = nop;
-   new->next = NULL;
-   new->prev = NULL;
+   /*if ( !is( label ) )
+      label[ 0 ] = 0;
+      
+   if ( !is( op1 ) )
+      op1[ 0 ] = 0;
+
+   if ( !is( op2 ) )
+      op2[ 0 ] = 0;
+   */
+      
+   if ( strlen( op1 ) > 0 )   nop += 1;
+   if ( strlen( op2 ) > 0 )   nop += 1;
+   
+   new = malloc( sizeof( struct FILE_INFO ) );
    strcpy( new->label, label );
    strcpy( new->operation, operation );
    strcpy( new->op1, op1 );
-   strcpy( new->op2, op2 );
+   strcpy( new->op2, op2 );   
+   new->next = NULL;
+   new->prev = NULL;
+   new->nop = nop;
    
-   
-   // se esta inserindo o primeiro
-   if ( first == NULL )
-   {      
-      new->addr = 0;      
-      first = new;
-      last = new;
-   }
-   else
-   { 
-      new->addr = last->addr + last->nop + 1;
-      last->next = new;
-      new->prev = last;
-      last = new;
-   }
+   // caso haja linha em branco
+   if ( strlen( operation ) > 0 )
+   {
+      // primeiro item   
+      if ( first == NULL )
+      {
+         new->addr = 0;
+         first = new;
+         last = new;   
+      }
+      else
+      {
+         new->addr = last->addr + last->nop + 1;
+         last->next = new;
+         last = new;
+      }
+   }   
 }
 
 // carrega conteudo do arquivo para a memoria
@@ -188,15 +258,17 @@ void loadFile2Memory( )
     {
        while ( !feof( file ) )
        {
-          strcpy( label, "" );
+          label[ 0 ] = 0;
+          operation[ 0 ] = 0;
+          op1[ 0 ] = 0;
+          op2[ 0 ] = 0;
           
           fgets( buffer, sizeof( buffer ), file );
           if ( !feof( file ) )
           {
               //verificando se é label
               if ( strstr( buffer, ":" ) )
-              {
-                  // printf( "\nTem label" );
+              {        
                   sscanf( buffer, "%s %s %s %s", label, operation, op1, op2 );
                   label[ strlen( label ) - 1 ] = '\0';
               }
@@ -206,8 +278,7 @@ void loadFile2Memory( )
                   sscanf( buffer, "%s %s %s", operation, op1, op2 );
               }
               //void new( int line, int addr, char *label, char *operation, char *op1, char *op2 )              
-              new(  label, operation, op1, op2  );
-   
+              new(  label, operation, op1, op2  );  
           }
        }
     }
@@ -220,7 +291,7 @@ void showMem()
    printf( "\n\n" );
    while ( aux != NULL )
    {      
-      printf( "Endereco:%d\tLabel:%s\t\tOperacao:%s\tOp1:%s\tOp2:%s\n", aux->addr, aux->label, aux->operation, aux->op1, aux->op2 );
+      printf( "LABEL = %s\t OPERATION = %s\tOP1 = %s\tOP2 = %s\n\n", aux->label, aux->operation, aux->op1, aux->op2 );
       aux = aux->next;      
    }
    getchar();
@@ -248,17 +319,7 @@ int isThereSymbol( char *symbol )
 
 // novo item na tabela de simbolos
 void st_new( char *symbol, struct FILE_INFO *p_mem )
-{
-   int addr;
-   if ( !strcmp( symbol, p_mem->op1 ) )
-      addr = 1;
-   else if  ( !strcmp( symbol, p_mem->op2 ) )
-      addr = 2;
-   
-   addr += p_mem->nop;
-   
-   //inserir
-      
+{ 
 }
 
 void testandoValores()
@@ -267,12 +328,12 @@ void testandoValores()
    int index;
    for ( index = 0; aux ; aux = aux->next, index++ )
    {
-      if ( aux->nop == 0 )
-         printf( "\nIndice:%d\tOperation:%s\t", index, aux->operation );
-      if ( aux->nop == 1 )
-         printf( "\nIndice:%d\tOperation:%s\tOp1:%s", index, aux->operation, aux->op1 );
       if ( aux->nop == 2 )
-         printf( "\nIndice:%d\tOperation:%s\tOp1:%s\tOp2:%s", index, aux->operation, aux->op1, aux->op2 );
+         printf( "Indice:%d\t  Endereco:%d\t Operacao:%s\t Operando1:%s\t Operando2:%s\n", index, aux->addr, aux->operation, aux->op1, aux->op2 );
+      if ( aux->nop == 1 )
+         printf( "Indice:%d\t  Endereco:%d\t Operacao:%s\t Operando1:%s\n", index, aux->addr, aux->operation, aux->op1 );
+      if ( aux->nop == 0 )
+         printf( "Indice:%d\t  Endereco:%d\t Operacao:%s\n", index, aux->addr, aux->operation );
    }
    printf("\n\n");
 }

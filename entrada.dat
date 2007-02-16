@@ -1,5 +1,7 @@
-CARREGA: LDA ZERO
-SOMA:       ADD VAL1
-                   ADD VAL2
-COPIA:      COPY VAL1 VAL2
-STOP
+INICIO:  COPY 10    20           
+FIM:       SPACE 12
+              SPACE VAL2
+              
+OUTRO: LDA ALGO
+               LDA OUTRA
+   

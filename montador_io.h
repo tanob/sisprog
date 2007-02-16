@@ -2,8 +2,9 @@
    montador_io.h
 */
 
-#define FIELD_SIZE 5
+#define FIELD_SIZE 10
 #define FILE_LEN 100
+#define SIZE_MINEM 20
 
 struct MONTADOR_INFO
 {
@@ -34,12 +35,21 @@ struct SYMBOL_TABLE
    struct SYMBOL_TABLE *next;
 };
 
+struct MINEM
+{
+   int code;
+   char name[ 10 ];
+};
+
+
 struct MONTADOR_INFO info;
 struct FILE_INFO *first;
 struct FILE_INFO *last;
 
 struct SYMBOL_TABLE *st_first;
 struct SYMBOL_TABLE *st_last;
+
+struct MINEM minem[ SIZE_MINEM ];
 
 
 // limpa tela generica
