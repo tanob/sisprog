@@ -11,67 +11,81 @@
 #define BUF_SIZE 100
 
 
-void createMinem()
+void createmnem()
 {
-   minem[ 0 ].code = 2;
-   strcpy( minem[ 0 ].name, "ADD" );
+   mnem[ 0 ].code = 2;
+   strcpy( mnem[ 0 ].name, "ADD" );
    
-   minem[ 1 ].code = 0;
-   strcpy( minem[ 1 ].name, "BR" );
+   mnem[ 1 ].code = 0;
+   strcpy( mnem[ 1 ].name, "BR" );
 
-   minem[ 2 ].code = 5;
-   strcpy( minem[ 2 ].name, "BRNEG" );
+   mnem[ 2 ].code = 5;
+   strcpy( mnem[ 2 ].name, "BRNEG" );
 
-   minem[ 3 ].code = 1;
-   strcpy( minem[ 3 ].name, "BRPOS" );
+   mnem[ 3 ].code = 1;
+   strcpy( mnem[ 3 ].name, "BRPOS" );
    
-   minem[ 4 ].code = 4;
-   strcpy( minem[ 4 ].name, "BRZERO" );
+   mnem[ 4 ].code = 4;
+   strcpy( mnem[ 4 ].name, "BRZERO" );
    
-   minem[ 5 ].code = 15;
-   strcpy( minem[ 5 ].name, "CALL" );
+   mnem[ 5 ].code = 15;
+   strcpy( mnem[ 5 ].name, "CALL" );
    
-   minem[ 6 ].code = 13;
-   strcpy( minem[ 6 ].name, "COPY" );
+   mnem[ 6 ].code = 13;
+   strcpy( mnem[ 6 ].name, "COPY" );
    
-    minem[ 7 ].code = 10;
-   strcpy( minem[ 7 ].name, "DIVIDE" );
+   mnem[ 7 ].code = 10;
+   strcpy( mnem[ 7 ].name, "DIVIDE" );
 
-   minem[ 8 ].code = 3;
-   strcpy( minem[ 8 ].name, "LOAD" );
+   mnem[ 8 ].code = 3;
+   strcpy( mnem[ 8 ].name, "LOAD" );
 
-   minem[ 9 ].code = 14;
-   strcpy( minem[ 9 ].name, "MULT" );
+   mnem[ 9 ].code = 14;
+   strcpy( mnem[ 9 ].name, "MULT" );
 
-   minem[ 10 ].code = 12;
-   strcpy( minem[ 10 ].name, "READ" );
+   mnem[ 10 ].code = 12;
+   strcpy( mnem[ 10 ].name, "READ" );
 
-   minem[ 11 ].code = 16;
-   strcpy( minem[ 11 ].name, "RET" );
+   mnem[ 11 ].code = 16;
+   strcpy( mnem[ 11 ].name, "RET" );
 
-   minem[ 12 ].code = 11;
-   strcpy( minem[ 12 ].name, "STOP" );
+   mnem[ 12 ].code = 11;
+   strcpy( mnem[ 12 ].name, "STOP" );
    
-   minem[ 13 ].code = 7;
-   strcpy( minem[ 13 ].name, "STORE" );
+   mnem[ 13 ].code = 7;
+   strcpy( mnem[ 13 ].name, "STORE" );
 
-   minem[ 14 ].code = 6;
-   strcpy( minem[ 14 ].name, "SUB" );
+   mnem[ 14 ].code = 6;
+   strcpy( mnem[ 14 ].name, "SUB" );
    
-   minem[ 15 ].code = 8;
-   strcpy( minem[ 15 ].name, "WRITE" );   
+   mnem[ 15 ].code = 8;
+   strcpy( mnem[ 15 ].name, "WRITE" );   
    
-   minem[ 16 ].code = -1;
-   strcpy( minem[ 16 ].name, "SPACE" );   
+   //mnem[ 16 ].code = -1;
+   //strcpy( mnem[ 16 ].name, "SPACE" );   
 
-   minem[ 17 ].code = -1;
-   strcpy( minem[ 17 ].name, "CONST" );   
+   //mnem[ 17 ].code = -1;
+   //strcpy( mnem[ 17 ].name, "CONST" );   
    
-   minem[ 18 ].code = -1;
-   strcpy( minem[ 18 ].name, "INTDEF" );   
+   //mnem[ 18 ].code = -1;
+   //strcpy( mnem[ 18 ].name, "INTDEF" );   
 
-   minem[ 19 ].code = -1;
-   strcpy( minem[ 19 ].name, "EXTDEF" );   
+   //mnem[ 19 ].code = -1;
+   //strcpy( mnem[ 19 ].name, "EXTDEF" );   
+}
+
+// retorna o codigo do mnemonico se existir ou -1 se nao existe 
+int is_mnem( char *mnem_param )
+{
+   int index;
+   for ( index = 0; index < SIZE_MNEM; index++ )
+   {
+      if ( !strcmp( mnem_param, mnem[ index ].name ) )
+      {
+        return mnem[ index ].code;
+      }
+   }
+   return -1;
 }
 
 
@@ -184,29 +198,115 @@ void showParamInfo()
 
 
 
-// inclui novo item na etrutura e insere itens na tabela de simbolos
+
+// funcao para inserir simbolos temporario
+void insert_into_temp_table( char *symbol, int type )
+{
+    struct TEMPORARY_TABLE *new;
+    new = malloc( sizeof( struct TEMPORARY_TABLE ) );
+    strcpy( new->symbol, symbol );
+    new->type = type;
+    new->next = NULL;
+
+    // primeiros
+    if ( tmp_first == NULL )    
+    {
+       tmp_first = malloc( sizeof( struct TEMPORARY_TABLE ) );
+       tmp_first = new;
+       tmp_last = new;
+    }
+    
+    // outros
+    else
+    {
+       tmp_last->next = new;
+       tmp_last = new; 
+    }
+    
+}
+
+// retorna true se jah existir na tabela de definicoes, logo, nao precisa inserir
+int is_in_defination_table( char *symbol )
+{
+    struct DEFINATION_TABLE *aux = def_first;
+    for ( ; aux != NULL; aux = aux->next )
+    {
+        if ( !strcmp( symbol, aux->symbol ) )
+        {
+            return 1;
+        }
+    }     
+    return 0;
+}
+void insert_into_defination_table( char *symbol, int addr, int mode )
+{
+    struct DEFINATION_TABLE *new;
+    new = malloc( sizeof( struct DEFINATION_TABLE ) );
+    new->addr = addr;
+    strcpy( new->symbol, symbol );
+    new->mode = mode;
+    
+    if ( !is_in_defination_table( symbol ) )
+    {
+       if ( def_first == NULL )
+       {
+         def_first = malloc( sizeof( struct DEFINATION_TABLE ) );
+         def_first = new;
+         def_last = new;
+       }
+       else
+       {
+         def_last->next = new;
+         def_last = new;
+       }
+    }
+}
+
+void insert_into_use_table( char *symbol, int addr )
+{
+    struct USE_TABLE *new;
+    new = malloc( sizeof( struct USE_TABLE ) );
+    new->addr = addr;    
+    strcpy( new->symbol, symbol );
+    
+    if ( use_first == NULL )
+    {
+      use_first = malloc( sizeof( struct USE_TABLE ) );
+      use_first = new;
+      use_last = new;
+    }
+    else
+    {
+      use_last->next = new;
+      use_last = new;
+    }  
+}
+
+
+// retorna { 0, 1, -1 } = { INTUSE, INTDEF, NAO ESTA NA TABELA }
+int is_in_temp_table( char *symbol )
+{
+   struct TEMPORARY_TABLE *aux = tmp_first;   
+   for ( ; aux != NULL; aux = aux->next )
+   {
+      if ( !strcmp( symbol, aux->symbol ) )
+      {
+        return aux->type;
+      }
+   }
+   return -1;
+}
+
+// inclui simbolo na tabela de simbolos, na tabela de definicoes ou na tabela de usos
+// dependendo de que tipo de declaracao esta sendo feita
 void new( char *label, char *operation, char *op1, char *op2 )
 {
    struct FILE_INFO *new;   
    int nop = 0;
    int int_op1;
    int int_op2;
-   
-   //printf( "\nLABEL:%s\n", label );
-   //printf( "OPERATION:%s\n", operation );
-   //printf( "Op1:%s\n", op1 );
-   //printf( "Op2:%s\n\n", op2 );
-   
-   /*if ( !is( label ) )
-      label[ 0 ] = 0;
-      
-   if ( !is( op1 ) )
-      op1[ 0 ] = 0;
-
-   if ( !is( op2 ) )
-      op2[ 0 ] = 0;
-   */
-      
+   int flag = 0;
+    
    if ( strlen( op1 ) > 0 )   nop += 1;
    if ( strlen( op2 ) > 0 )   nop += 1;
    
@@ -214,31 +314,73 @@ void new( char *label, char *operation, char *op1, char *op2 )
    strcpy( new->label, label );
    strcpy( new->operation, operation );
    strcpy( new->op1, op1 );
-   strcpy( new->op2, op2 );   
+   strcpy( new->op2, op2 );     
    new->next = NULL;
    new->prev = NULL;
    new->nop = nop;
    
+   
+   // se for definicao global ou de uso interno de simbolo global coloca na tabela temporaria   
+   // usando simbolo externo
+   if ( !strcmp( operation, "INTUSE" ) )
+   {
+      insert_into_temp_table( label, 0 );
+      flag = 1;
+   }
+
+   // definindo simbolo global
+   if ( !strcmp( operation, "INTDEF" ) )
+   {
+      insert_into_temp_table( label, 1 );
+      flag = 1;      
+   }
+   
+
    // caso haja linha em branco
    if ( strlen( operation ) > 0 )
-   {
-      // primeiro item   
-      if ( first == NULL )
-      {
-         new->addr = 0;
-         first = new;
-         last = new;   
-      }
-      else
-      {
-         new->addr = last->addr + last->nop + 1;
-         last->next = new;
-         last = new;
+   {      
+      // senao estiver veruficando declaracao de simbolos externos ou outra operacao que nao existe, nao insere
+      if ( !flag && is_mnem( operation ) != -1 )
+      {  
+         // primeiro item   
+         if ( first == NULL )
+         {
+            new->addr = 0;
+            first = new;
+            last = new;   
+         }
+         else
+         {
+            new->addr = last->addr + last->nop + 1;
+            last->next = new;
+            last = new;
+         }
+         
+         // Encontrado uso de simbolo externo.. adiciona
+         if ( is_in_temp_table( label ) == 0 )
+         {
+            /*
+            IMPLEMENTAR
+            FUNCAO JA ESTA PRONTA. VERIFICAR NESTE MESMO ARQUIVO
+            insert_into_use_table( PARAMETROS );
+            */
+            
+         }
+         // Encontrado definicao de simbolo global         
+         else if ( is_in_temp_table( label ) == 1 )
+         {
+            /*
+            IMPLEMENTAR
+            FUNCAO JA ESTA PRONTA. VERIFICAR NESTE MESMO ARQUIVO
+            insert_into_defination_table( PARAMETROS );
+            */
+         }
       }
    }   
    
    int_op1 = atoi( op1 );
    int_op2 = atoi( op2 );
+
    
    // se forem simbolos insere na tabela de simbolos
    // simbolo em op1   
@@ -258,7 +400,8 @@ void new( char *label, char *operation, char *op1, char *op2 )
    {
       printf( "Simbolo encontrado: %s\n", op2 );
    }
-
+   
+   
    
    getchar();
    

@@ -4,7 +4,7 @@
 
 #define FIELD_SIZE 10
 #define FILE_LEN 100
-#define SIZE_MINEM 20
+#define SIZE_MNEM 16
 
 struct MONTADOR_INFO
 {
@@ -35,12 +35,34 @@ struct SYMBOL_TABLE
    struct SYMBOL_TABLE *next;
 };
 
-struct MINEM
+struct MNEM
 {
    int code;
    char name[ 10 ];
 };
 
+struct USE_TABLE
+{
+   char symbol[ FIELD_SIZE ];       
+   int addr;
+   struct USE_TABLE *next;
+};
+
+struct DEFINATION_TABLE
+{
+   char symbol[ FIELD_SIZE ];       
+   int addr;
+   int mode;
+   struct DEFINATION_TABLE *next;
+};
+
+// POG
+struct TEMPORARY_TABLE
+{
+   char symbol[ FIELD_SIZE ];       
+   int type;
+   struct TEMPORARY_TABLE *next;
+};
 
 struct MONTADOR_INFO info;
 struct FILE_INFO *first;
@@ -49,7 +71,17 @@ struct FILE_INFO *last;
 struct SYMBOL_TABLE *st_first;
 struct SYMBOL_TABLE *st_last;
 
-struct MINEM minem[ SIZE_MINEM ];
+struct USE_TABLE *use_first;
+struct USE_TABLE *use_last;
+
+struct DEFINATION_TABLE *def_first;
+struct DEFINATION_TABLE *def_last;
+
+struct TEMPORARY_TABLE *tmp_first;
+struct TEMPORARY_TABLE *tmp_last;
+
+
+struct MNEM mnem[ SIZE_MNEM ];
 
 
 // limpa tela generica
