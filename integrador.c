@@ -12,10 +12,10 @@ Mauro Brito
 
 
 
-#include "Macros.c"
+#include "macros.c"
 //#include "montador.c"
 #include <stdio.h>
-#include <conio.h>
+#include <conio.h> // adicionar módulo
 
 void escreve_erros(struct tabela_erros tab,FILE *listagem);
 
