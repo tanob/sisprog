@@ -355,26 +355,6 @@ void new( char *label, char *operation, char *op1, char *op2 )
             last->next = new;
             last = new;
          }
-         
-         // Encontrado uso de simbolo externo.. adiciona
-         if ( is_in_temp_table( label ) == 0 )
-         {
-            /*
-            IMPLEMENTAR
-            FUNCAO JA ESTA PRONTA. VERIFICAR NESTE MESMO ARQUIVO
-            insert_into_use_table( PARAMETROS );
-            */
-            
-         }
-         // Encontrado definicao de simbolo global         
-         else if ( is_in_temp_table( label ) == 1 )
-         {
-            /*
-            IMPLEMENTAR
-            FUNCAO JA ESTA PRONTA. VERIFICAR NESTE MESMO ARQUIVO
-            insert_into_defination_table( PARAMETROS );
-            */
-         }
       }
    }   
    
@@ -401,6 +381,18 @@ void new( char *label, char *operation, char *op1, char *op2 )
       printf( "Simbolo encontrado: %s\n", op2 );
    }
    
+   // encontrou INTUSE no campo de operacao
+   if ( !strcmp( "INTUSE", new->operation  ) )  
+   {
+      printf( "\nINTUSE encontrado maneh\n" );
+   } 
+
+   // encontrou INTDEF ou START em operation
+   if ( !strcmp( "INTDEF", new->operation  ) || !strcmp( "START", new->operation  ))  
+   {
+      printf( "\nINTDEF ou START encontrados maneh e o bonat eh viado\n" );
+   } 
+
    
    
    getchar();
@@ -408,6 +400,8 @@ void new( char *label, char *operation, char *op1, char *op2 )
 }
 
 // carrega conteudo do arquivo para a memoria
+// e ja monta algumas tabelas
+
 void loadFile2Memory( )
 {
    FILE *file;

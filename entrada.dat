@@ -1,7 +1,16 @@
-INICIO:  COPY 10   PSY
-FIM:       SPACE 12
-              SPACE VAL2
-              
-OUTRO: LDA ALGO
-               LDA OUTRA
-   
+PROG1:    START 0
+PROG2:    INTUSE
+TABLE:    INTUSE
+          INTDEF TEST
+          INTDEF RESUMEPT
+          INTDEF HEAD
+          BRNEG 10
+          BRNEG 11
+          BRNEG 12
+TEST:     BRPOS PROG2
+RESUMEPT: LOAD LIST
+          LOAD TABLE+2
+HEAD:     STOP
+LIST:     CONST 37
+          END
+
