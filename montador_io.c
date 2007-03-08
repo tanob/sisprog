@@ -334,6 +334,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
       else
       {
         // erro na declaracao de uso
+        printf( "\nERRO\n" );
       }
    }
 
@@ -348,6 +349,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
       else
       {
         // erro na definicao de simbolo global
+        printf( "\nERRO\n" );
       }
    }
    
@@ -637,4 +639,36 @@ void add_erro( char *erro )
         erro_last->next = novo;
         erro_last = novo;
     }
+}
+
+// percorre toda uma determinada lista
+// parametros: { 0, 1, 2 } = { symbol_table, definition_table, use_table }
+void walking_into( int table, void *action )
+{
+    struct SYMBOL_TABLE *aux0 = st_first;
+    struct DEFINITION_TABLE *aux1 = def_first;
+    struct USE_TABLE *aux2 = use_first;
+          
+    if ( table == 0 )
+    {
+        printf("\n0\n");
+        for ( ; aux0 != NULL; aux0 = aux0->next )
+            printf( "SIMBOLO:%s\t ENDERECO:%d\n", aux0->symbol, aux0->addr );
+    }
+    
+    if ( table == 1 )
+    {
+        printf("\n1\n");
+        for ( ; aux1 != NULL; aux1 = aux1->next )
+            printf( "SIMBOLO:%s\t ENDERECO:%d\n", aux1->symbol, aux1->addr );
+    }
+    
+    if ( table == 2 )
+    {
+        printf("\n2\n");
+        for ( ; aux2 != NULL; aux2 = aux2->next )
+            printf( "SIMBOLO:%s\t ENDERECO:%d\n", aux2->symbol, aux2->addr );
+    }
+
+
 }
