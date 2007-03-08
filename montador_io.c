@@ -426,6 +426,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
       if ( is_in_temp_table( op1 ) == 0 )
       {
         printf( " - inserindo na tabela de usos" );
+        insert_into_use_table( op1, new->addr + 1 );
       }
       printf( "\n" );
 
@@ -439,6 +440,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
       if ( is_in_temp_table( op2 ) == 0 )
       {
         printf( " - inserindo na tabela de usos" );
+        insert_into_use_table( op1, new->addr + 2 );
       }
 
       printf( "\n" );
@@ -464,7 +466,7 @@ void loadFile2Memory( )
    {
       printf( "\nErro na abertura de arquivo..." );
       exit( 1 );
-    }
+   }
     else
     {
        while ( !feof( file ) )
