@@ -52,6 +52,7 @@ struct DEFINITION_TABLE
 {
    char symbol[ FIELD_SIZE ];       
    int addr;
+   // 0 = absoluto, 1 = relativo
    int mode;
    struct DEFINITION_TABLE *next;
 };

@@ -326,15 +326,29 @@ int new( char *label, char *operation, char *op1, char *op2 )
    // usando simbolo externo
    if ( !strcmp( operation, "INTUSE" ) )
    {
-      insert_into_temp_table( label, 0 );
-      flag = 1;
+      if ( strlen( label ) > 0 && strlen( op1 ) == 0 )
+      {
+        insert_into_temp_table( label, 0 );
+        flag = 1;
+      }
+      else
+      {
+        // erro na declaracao de uso
+      }
    }
 
    // definindo simbolo global
    if ( !strcmp( operation, "INTDEF" ) )
    {
-      insert_into_temp_table( op1, 1 );
-      flag = 1;      
+      if ( strlen( label ) == 0 && strlen( op1 ) > 0 )
+      {
+        insert_into_temp_table( op1, 1 );
+        flag = 1;      
+      }
+      else
+      {
+        // erro na definicao de simbolo global
+      }
    }
    
 
@@ -394,6 +408,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
          else
          {
             printf( "Definindo endereco para: %s e inserido na tabela de definicoes", label );      
+            insert_into_definition_table( label, new->addr, 1 );
          }        
       }
       else
