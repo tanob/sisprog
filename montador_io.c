@@ -415,7 +415,8 @@ int new( char *label, char *operation, char *op1, char *op2 )
       }
       else
       {
-        printf( "Definindo endereco para: %s", label );
+        printf( "Definindo endereco para: %s e inserindo na tabela de simbolos", label );
+        st_new( label, new, 1 );
       }
       printf( "\n" );
    }
