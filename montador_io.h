@@ -48,21 +48,30 @@ struct USE_TABLE
    struct USE_TABLE *next;
 };
 
-struct DEFINATION_TABLE
+struct DEFINITION_TABLE
 {
    char symbol[ FIELD_SIZE ];       
    int addr;
    int mode;
-   struct DEFINATION_TABLE *next;
+   struct DEFINITION_TABLE *next;
 };
 
-// POG
+// Insere todos os simbolos globais e externos
 struct TEMPORARY_TABLE
 {
    char symbol[ FIELD_SIZE ];       
    int type;
    struct TEMPORARY_TABLE *next;
 };
+
+
+// Lista de erros encontrada
+struct ERRO
+{
+   char erro[ 150 ];       
+   struct ERRO *next;
+};
+
 
 struct MONTADOR_INFO info;
 struct FILE_INFO *first;
@@ -74,14 +83,18 @@ struct SYMBOL_TABLE *st_last;
 struct USE_TABLE *use_first;
 struct USE_TABLE *use_last;
 
-struct DEFINATION_TABLE *def_first;
-struct DEFINATION_TABLE *def_last;
+struct DEFINITION_TABLE *def_first;
+struct DEFINITION_TABLE *def_last;
 
 struct TEMPORARY_TABLE *tmp_first;
 struct TEMPORARY_TABLE *tmp_last;
 
 
 struct MNEM mnem[ SIZE_MNEM ];
+
+struct ERRO *erro_first;
+struct ERRO *erro_last;
+
 
 
 // limpa tela generica

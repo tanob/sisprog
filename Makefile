@@ -4,7 +4,4 @@ FLAGS = -Wall -D NIX
 
 all:
 	clear
-	gcc $(FLAGS) $(FILES) -o $(OUT)	
-
-	
-
+	gcc $(FLAGS) $(FILES) -o $(OUT);	
