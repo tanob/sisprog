@@ -76,10 +76,11 @@ void createmnem()
 
 // retorna o codigo do mnemonico se existir ou -1 se nao existe 
 int is_mnem( char *mnem_param )
-{
+{   
    int index;
+   createmnem();
    for ( index = 0; index < SIZE_MNEM; index++ )
-   {
+   {      
       if ( !strcmp( mnem_param, mnem[ index ].name ) )
       {
         return mnem[ index ].code;
@@ -326,71 +327,61 @@ int new( char *label, char *operation, char *op1, char *op2 )
    // usando simbolo externo
    if ( !strcmp( operation, "INTUSE" ) )
    {
+      flag = 1;
       if ( strlen( label ) > 0 && strlen( op1 ) == 0 )
       {
+        printf( "\n%s - INTUSE\n", label );  
         insert_into_temp_table( label, 0 );
-        flag = 1;
       }
       else
       {
         // erro na declaracao de uso
-        printf( "\nERRO\n" );
+        printf( "ERRO no uso de INTUSE\n" );
       }
+      return 0;
    }
 
    // definindo simbolo global
-   if ( !strcmp( operation, "INTDEF" ) )
+   if ( !strcmp( operation, "INTDEF" ))
    {
+      flag = 1;        
       if ( strlen( label ) == 0 && strlen( op1 ) > 0 )
       {
-        insert_into_temp_table( op1, 1 );
-        flag = 1;      
+        printf( "\n%s - INTDEF\n", op1 );  
+        insert_into_temp_table( op1, 1 );        
       }
       else
       {
         // erro na definicao de simbolo global
-        printf( "\nERRO\n" );
+        printf( "ERRO no uso de INTDEF\n" );
       }
+      return 0;
    }
    
+      
 
-    // soh insere simbolo novo se for operation != de INTDEF e !+ de INTUSE
-
-
-   if ( !strcmp( operation, "INTDEF" ) )
-   {
-      printf( "\n%s - INTDEF\n", op1 );  
-      return 0; 
+   // caso haja linha em branco
+   if ( strlen( operation ) > 0 )
+   {      
+    printf( "\noperation = %s \t flag = %d \t is_mnem(%s) = %d\n", operation, flag, operation, is_mnem(operation) );
+   // senao estiver veruficando declaracao de simbolos externos ou outra operacao que nao existe, nao insere
+     if ( !flag && is_mnem( operation ) != -1 )
+     {  
+       // primeiro item   
+       if ( first == NULL )
+       {
+           new->addr = 0;
+           first = new;
+           last = new;   
+       }
+       else
+       {
+           new->addr = last->addr + last->nop + 1;
+           last->next = new;
+           last = new;
+       }
+     }
    }
-   else if ( !strcmp( operation, "INTUSE" ) )
-   {
-      printf( "\n%s - INTUSE\n", label );  
-      return 0;    
-   }
-   else
-   {
-      // caso haja linha em branco
-      if ( strlen( operation ) > 0 )
-      {      
-         // senao estiver veruficando declaracao de simbolos externos ou outra operacao que nao existe, nao insere
-        if ( !flag && is_mnem( operation ) != -1 )
-        {  
-             // primeiro item   
-            if ( first == NULL )
-            {
-                new->addr = 0;
-                first = new;
-                last = new;   
-            }
-            else
-            {
-                new->addr = last->addr + last->nop + 1;
-                last->next = new;
-                last = new;
-            }
-        }
-      }
-    }   
    
    int_op1 = atoi( op1 );
    int_op2 = atoi( op2 );
@@ -399,6 +390,13 @@ int new( char *label, char *operation, char *op1, char *op2 )
    // se forem simbolos insere na tabela de simbolos
    // simbolo em op1   
    
+   // encontrou operation = start
+   if ( !strcmp( operation, "START" ) )
+   {
+      insert_into_definition_table( label, new->addr, 1 );
+      return 0;
+   }
+
    if ( strlen( label ) > 0 )
    {
       if ( is_in_temp_table( label ) == 1 )
@@ -411,6 +409,8 @@ int new( char *label, char *operation, char *op1, char *op2 )
          {
             printf( "Definindo endereco para: %s e inserido na tabela de definicoes", label );      
             insert_into_definition_table( label, new->addr, 1 );
+            //printf( "\nEndereco: %d\n", new->addr );
+            //getchar();
          }        
       }
       else
@@ -423,7 +423,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
    
    if ( strlen( op1 ) > 0 && !int_op1 )
    {
-      printf( "Simbolo encontrado: %s", op1 );      
+      printf( "Simbolo encontrado[ op1 ]: %s", op1 );      
 
       // se econtrou simbolo externo insere na tabela de simbolos
       if ( is_in_temp_table( op1 ) == 0 )
@@ -437,7 +437,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
    
    if ( strlen( op2 ) > 0 && !int_op2 )
    {
-      printf( "Simbolo encontrado: %s", op2 );
+      printf( "Simbolo encontrado[ op2 ]: %s", op2 );
 
       // se econtrou simbolo externo insere na tabela de simbolos
       if ( is_in_temp_table( op2 ) == 0 )
@@ -447,8 +447,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
       }
 
       printf( "\n" );
-   }
-   getchar();  
+   }    
    return 1; 
 }
 
@@ -652,23 +651,23 @@ void walking_into( int table, void *action )
           
     if ( table == 0 )
     {
-        printf("\n0\n");
+        printf("\nTabela de simbolos\n");
         for ( ; aux0 != NULL; aux0 = aux0->next )
-            printf( "SIMBOLO:%s\t ENDERECO:%d\n", aux0->symbol, aux0->addr );
+            printf( "%s ( %d )\n", aux0->symbol, aux0->addr );
     }
     
     if ( table == 1 )
     {
-        printf("\n1\n");
+        printf("\nTabela de definicoes\n");
         for ( ; aux1 != NULL; aux1 = aux1->next )
-            printf( "SIMBOLO:%s\t ENDERECO:%d\n", aux1->symbol, aux1->addr );
+            printf( "%s ( %d )\n", aux1->symbol, aux1->addr );
     }
     
     if ( table == 2 )
     {
-        printf("\n2\n");
+        printf("\nTabela de usos\n");
         for ( ; aux2 != NULL; aux2 = aux2->next )
-            printf( "SIMBOLO:%s\t ENDERECO:%d\n", aux2->symbol, aux2->addr );
+            printf( "%s ( %d )\n", aux2->symbol, aux2->addr );
     }
 
 
