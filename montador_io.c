@@ -191,9 +191,8 @@ void showParamInfo()
    if ( strlen( info.input ) > 0  &&  strlen( info.output  ) > 0 )
    {
       printf( "Arquivo de entrada: %s\n", info.input );
-      printf( "Arquivo de saida...: %s\n", info.output );
+      printf( "Arquivo de saida...: %s", info.output );
    }
-   getchar();
 }
 
 
@@ -329,8 +328,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
    {
       flag = 1;
       if ( strlen( label ) > 0 && strlen( op1 ) == 0 )
-      {
-        printf( "\n%s - INTUSE\n", label );  
+      {        
         insert_into_temp_table( label, 0 );
       }
       else
@@ -347,7 +345,6 @@ int new( char *label, char *operation, char *op1, char *op2 )
       flag = 1;        
       if ( strlen( label ) == 0 && strlen( op1 ) > 0 )
       {
-        printf( "\n%s - INTDEF\n", op1 );  
         insert_into_temp_table( op1, 1 );        
       }
       else
@@ -362,9 +359,9 @@ int new( char *label, char *operation, char *op1, char *op2 )
 
    // caso haja linha em branco
    if ( strlen( operation ) > 0 )
-   {      
-    printf( "\noperation = %s \t flag = %d \t is_mnem(%s) = %d\n", operation, flag, operation, is_mnem(operation) );
-   // senao estiver veruficando declaracao de simbolos externos ou outra operacao que nao existe, nao insere
+   { 
+   
+    // senao estiver verificando declaracao de simbolos externos ou outra operacao que nao existe, nao insere
      if ( !flag && is_mnem( operation ) != -1 )
      {  
        // primeiro item   
@@ -388,7 +385,9 @@ int new( char *label, char *operation, char *op1, char *op2 )
 
    
    // se forem simbolos insere na tabela de simbolos
+   // *********************************************** 
    // simbolo em op1   
+   
    
    // encontrou operation = start
    if ( !strcmp( operation, "START" ) )
@@ -407,7 +406,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
          }
          else
          {
-            printf( "Definindo endereco para: %s e inserido na tabela de definicoes", label );      
+            //printf( "Definindo endereco para: %s e inserido na tabela de definicoes", label );      
             insert_into_definition_table( label, new->addr, 1 );
             //printf( "\nEndereco: %d\n", new->addr );
             //getchar();
@@ -415,38 +414,33 @@ int new( char *label, char *operation, char *op1, char *op2 )
       }
       else
       {
-        printf( "Definindo endereco para: %s e inserindo na tabela de simbolos", label );
+        //printf( "Definindo endereco para: %s e inserindo na tabela de simbolos", label );
         st_new( label, new, 1 );
       }
-      printf( "\n" );
    }
    
    if ( strlen( op1 ) > 0 && !int_op1 )
    {
-      printf( "Simbolo encontrado[ op1 ]: %s", op1 );      
+      //printf( "Simbolo encontrado[ op1 ]: %s", op1 );      
 
       // se econtrou simbolo externo insere na tabela de simbolos
       if ( is_in_temp_table( op1 ) == 0 )
       {
-        printf( " - inserindo na tabela de usos" );
+        //printf( " - inserindo na tabela de usos" );
         insert_into_use_table( op1, new->addr + 1 );
       }
-      printf( "\n" );
-
    }
    
    if ( strlen( op2 ) > 0 && !int_op2 )
    {
-      printf( "Simbolo encontrado[ op2 ]: %s", op2 );
+      //printf( "Simbolo encontrado[ op2 ]: %s", op2 );
 
       // se econtrou simbolo externo insere na tabela de simbolos
       if ( is_in_temp_table( op2 ) == 0 )
       {
-        printf( " - inserindo na tabela de usos" );
+        //printf( " - inserindo na tabela de usos" );
         insert_into_use_table( op1, new->addr + 2 );
       }
-
-      printf( "\n" );
    }    
    return 1; 
 }
@@ -492,8 +486,10 @@ void loadFile2Memory( )
                   //printf( "\nNao tem label" );
                   sscanf( buffer, "%s %s %s", operation, op1, op2 );
               }
-              //void new( int line, int addr, char *label, char *operation, char *op1, char *op2 )              
-              new(  label, operation, op1, op2  );  
+              
+              // senao for comentario carrega para memoria  
+              if ( buffer[ 0 ] != '*' )
+                new(  label, operation, op1, op2  );  
           }
        }
     }
@@ -501,15 +497,13 @@ void loadFile2Memory( )
 
 // mostra estrutura da memoria soh para testes
 void showMem()
-{
-   struct FILE_INFO *aux = first;   
-   printf( "\n\n" );
+{   
+   struct FILE_INFO *aux = first;      
    while ( aux != NULL )
    {      
-      printf( "LABEL = %s\t OPERATION = %s\tOP1 = %s\tOP2 = %s\n\n", aux->label, aux->operation, aux->op1, aux->op2 );
+      //printf( "LABEL = %s\t OPERATION = %s\tOP1 = %s\tOP2 = %s\n\n", aux->label, aux->operation, aux->op1, aux->op2 );
       aux = aux->next;      
    }
-   getchar();
 }
 
 
@@ -584,8 +578,9 @@ void st_new( char *symbol, struct FILE_INFO *p_mem, int modo )
 
 void testandoValores()
 {
+   /*
    struct FILE_INFO *aux = first;
-   int index;
+   int index;   
    for ( index = 0; aux ; aux = aux->next, index++ )
    {
       if ( aux->nop == 2 )
@@ -596,30 +591,9 @@ void testandoValores()
          printf( "Indice:%d\t  Endereco:%d\t Operacao:%s\n", index, aux->addr, aux->operation );
    }
    printf("\n\n");
+   */
 }
 
-
-// mostra dados que estao dentro da tabela de definicao
-void show_definition_table()
-{
-    struct DEFINITION_TABLE *aux;
-    // se tem intens
-    for ( aux = def_first; aux != NULL; aux = aux->next )
-    {
-        printf( "\nSimbolo: %s\tEndereco:%i\tModo:%i", aux->symbol, aux->addr, aux->mode );
-    }
-}
-
-// mostra dados que estao dentro da tabela de definicao
-void show_use_table()
-{
-    struct USE_TABLE *aux;
-    // se tem intens
-    for ( aux = use_first; aux != NULL; aux = aux->next )
-    {
-        printf( "\nSimbolo: %s\tEndereco:%i", aux->symbol, aux->addr );
-    }
-}
 
 // adiciona erro a lista de erros
 void add_erro( char *erro )
@@ -651,7 +625,7 @@ void walking_into( int table, void *action )
           
     if ( table == 0 )
     {
-        printf("\nTabela de simbolos\n");
+        printf("\n\nTabela de simbolos\n");
         for ( ; aux0 != NULL; aux0 = aux0->next )
             printf( "%s ( %d )\n", aux0->symbol, aux0->addr );
     }
@@ -669,6 +643,4 @@ void walking_into( int table, void *action )
         for ( ; aux2 != NULL; aux2 = aux2->next )
             printf( "%s ( %d )\n", aux2->symbol, aux2->addr );
     }
-
-
 }
