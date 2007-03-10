@@ -11,10 +11,7 @@
 int main( int argc, char *argv[] )
 {
    getParamInfo( argc, argv );
-   showParamInfo();
    loadFile2Memory();
-   //showMem();
-   //testandoValores();
    walking_into( 0, NULL );
    walking_into( 1, NULL );
    walking_into( 2, NULL );

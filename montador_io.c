@@ -61,11 +61,11 @@ void createmnem()
    mnem[ 15 ].code = 8;
    strcpy( mnem[ 15 ].name, "WRITE" );   
    
-   //mnem[ 16 ].code = -1;
-   //strcpy( mnem[ 16 ].name, "SPACE" );   
+   mnem[ 16 ].code = 69;
+   strcpy( mnem[ 16 ].name, "SPACE" );   
 
-   //mnem[ 17 ].code = -1;
-   //strcpy( mnem[ 17 ].name, "CONST" );   
+   mnem[ 17 ].code = 69;
+   strcpy( mnem[ 17 ].name, "CONST" );   
    
    //mnem[ 18 ].code = -1;
    //strcpy( mnem[ 18 ].name, "INTDEF" );   
@@ -309,7 +309,7 @@ int new( char *label, char *operation, char *op1, char *op2 )
    int flag = 0;
     
    
-   if ( strlen( op1 ) > 0 )   nop += 1;
+   if ( ( strlen( op1 ) > 0 ) && ( is_mnem( operation ) != 69 ) )   nop += 1;
    if ( strlen( op2 ) > 0 )   nop += 1;
    
    new = malloc( sizeof( struct FILE_INFO ) );
@@ -389,12 +389,14 @@ int new( char *label, char *operation, char *op1, char *op2 )
    // simbolo em op1   
    
    
+   
    // encontrou operation = start
    if ( !strcmp( operation, "START" ) )
    {
       insert_into_definition_table( label, new->addr, 1 );
       return 0;
    }
+   
 
    if ( strlen( label ) > 0 )
    {
@@ -411,11 +413,6 @@ int new( char *label, char *operation, char *op1, char *op2 )
             //printf( "\nEndereco: %d\n", new->addr );
             //getchar();
          }        
-      }
-      else
-      {
-        //printf( "Definindo endereco para: %s e inserindo na tabela de simbolos", label );
-        st_new( label, new, 1 );
       }
    }
    
@@ -441,7 +438,14 @@ int new( char *label, char *operation, char *op1, char *op2 )
         //printf( " - inserindo na tabela de usos" );
         insert_into_use_table( op1, new->addr + 2 );
       }
-   }    
+   }
+   
+   // simbolos internos
+   if ( strlen( label ) > 0 &&  !is_in_definition_table( label ) )
+   {
+      new_st( label, new->addr );
+   }
+       
    return 1; 
 }
 

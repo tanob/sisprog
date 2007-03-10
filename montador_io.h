@@ -4,7 +4,7 @@
 
 #define FIELD_SIZE 10
 #define FILE_LEN 100
-#define SIZE_MNEM 16
+#define SIZE_MNEM 18
 
 struct MONTADOR_INFO
 {
@@ -113,6 +113,7 @@ void loadFile2Memory();
 void showMem();
 void testandoValores();
 void st_new( char *symbol, struct FILE_INFO *p_mem, int modo );
+void new_st( char *symbol, int addr );
 void walking_into( int table, void *action );
 
 
