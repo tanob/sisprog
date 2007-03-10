@@ -1,21 +1,22 @@
-/**********************************************************************************************
-UNIVERSIDADE FEDERAL DE PELOTAS
-BACHARELADO EM CIÊNCIA DA COMPUTAÇÃO
-PROJETOS EM COMPUTAÇÃO
-Processador de Macros, Integração Macro Montador (Versão preliminar)
+/*=====================================================================
+                    UNIVERSIDADE FEDERAL DE PELOTAS
+                  BACHARELADO EM CIÊNCIA DA COMPUTAÇÃO
+                          PROJETOS EM COMPUTAÇÃO
+   Processador de Macros, Integração Macro Montador (Versão preliminar)
 
 Componentes:
 Giales Fischer
 Pablo Barcellos
 Mauro Brito
-***********************************************************************************************/
+=====================================================================*/
+/*Entrada: teste.ASM*/
+/*Saida: MASMAPRG.ASM*/
 
 
-
-#include "macros.c"
+#include "macro.c"
 //#include "montador.c"
 #include <stdio.h>
-#include <conio.h> // adicionar módulo
+#include <conio.h>
 
 void escreve_erros(struct tabela_erros tab,FILE *listagem);
 
@@ -25,27 +26,27 @@ FILE *list;
 
 int main(int argc, char **argv)
 {
-  int status=0, i;
+  int status=0;
   char nome_f[250], arquivo_listagem[250],nome_monta[14];
   char *nome_erros="ERROS.TAB";
 
-//  clrscr();
  
   if (argc!=2)
   {
-    printf("Falta ou excesso de parâmetros.\nSintaxe correta: <nome deste programa> <nome do arquivo fonte>");
+    printf("Falta ou excesso de parametros.\nSintaxe correta: <nome deste programa> <nome do arquivo fonte>");
     getch();
     exit(1);
   }
   else
     strcpy(nome_f,argv[1]); 
 
-  status = macros(nome_f, &t);  
-  if (status)
+  status = processador_de_macros(nome_f, &t);
+  
+  if (status==100)
   {
-    printf("Processador de Macros concluido com exito");
+    printf("\n Processador de Macros concluido com exito");
     getch();
-	 status=1;
+    status=1;
   }
  
   else
@@ -53,11 +54,13 @@ int main(int argc, char **argv)
 	 printf("Processador de Macros concluido com erro");
     getch();
     arq_erros=fopen(nome_erros,"r");
-    if (arq_erros!=NULL)
+        list=fopen("list.txt","w");
+    if (arq_erros!=NULL&&list!=NULL)
     { 
       escreve_erros(t,list);
     }
     fclose(arq_erros);
+    fclose(list);
   }
   //status=1;
   /*if (status)
@@ -91,14 +94,14 @@ void escreve_erros(struct tabela_erros tab,FILE *listagem)
 
   muito_erro="  ";
 
-  if(tab.n_erros>=MAX_ERROS)
+  if(tab.numero_de_erros>=MAX_ERROS)
     muito_erro="EXISTEM MUITOS ERROS\n";
   else
   {
     listagem=fopen("listagem.lst","w");
     if (listagem!=NULL)
     {
-	   for(j=0;j<=tab.n_erros;j++)
+	   for(j=0;j<=tab.numero_de_erros;j++)
 	   {
 	     teste=fgets(linha,80,arq_erros);
 	     achou=FALSE;
@@ -117,7 +120,7 @@ void escreve_erros(struct tabela_erros tab,FILE *listagem)
 			   }
 		      msg[k]='\n';
 		      msg[k+1]=0;
-		      fprintf(listagem,"Linha %d: %s",tab.erros[j].line,msg);
+		      fprintf(listagem,"Linha %d: %s",tab.erros[j].linha,msg);
 		    }
 		    teste=fgets(linha,80,arq_erros);
 		  } //fim da procura
